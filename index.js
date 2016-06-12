@@ -8,7 +8,7 @@ let zlib = require('zlib');
 let Promise = require('bluebird');
 let execAsync = Promise.promisify(require('child_process').exec);
 
-process.env.PATH = process.env.PATH + ':' + process.env.LAMBDA_TASK_ROOT;
+process.env.PATH = process.env.PATH + ':' + process.env.LAMBDA_TASK_ROOT + "/bin";
 const FFMPEG = "ffmpeg";
 //const FFMPEG = "/usr/local/bin/ffmpeg";
 
@@ -27,7 +27,7 @@ exports.handler = function(event, context, done) {
     const bucket = event.Records[0].s3.bucket.name;
     const key = decodeURIComponent(event.Records[0].s3.object.key.replace(/\+/g, ' '));
 
-    if(!key.match(/[.](mp3|wav)$/)) {
+    if(!key.match(/[.](mp3|wav)$/) || !key.match(PROFILE_PATTERN)) {
     	console.log("nothing to do for " + key);
     	done();
     }
