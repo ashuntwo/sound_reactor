@@ -32,27 +32,17 @@ module.exports = function(grunt) {
           options:{
             include_files: [ 'bin/ffpmeg' ]
           }
-        },
-        devo: {
-          
         }
-    }/*,
+    },
     lambda_deploy: {
         default: {
-            arn: 'arn:aws:lambda:us-east-1:939027667944:function:MagicDoor',
+            arn: 'arn:aws:lambda:us-east-1:939027667944:function:sound-reactor',
             options: {
               enableVersioning: true,
               aliases: 'dev'
             }
-        },
-        devo: {
-          arn: 'arn:aws:lambda:us-west-2:939027667944:function:MagicDoor',
-          options: {
-            enableVersioning: true,
-            aliases: 'dev'
-          }
         }
-    },*/
+    }
   });
 
   grunt.loadNpmTasks('grunt-mocha-test');
@@ -61,5 +51,5 @@ module.exports = function(grunt) {
 
   // Default task(s).
   grunt.registerTask('default', ['mochaTest', 'jshint']);
-  grunt.registerTask('deploy', ['mochaTest', 'jshint', 'lambda_package:default']);
+  grunt.registerTask('deploy', ['mochaTest', 'jshint', 'lambda_package:default', 'lambda_deploy:default']);
 };

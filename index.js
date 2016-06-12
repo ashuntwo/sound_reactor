@@ -8,23 +8,39 @@ let zlib = require('zlib');
 let Promise = require('bluebird');
 let execAsync = Promise.promisify(require('child_process').exec);
 
-const FFMPEG = process.env.LAMBDA_TASK_ROOT + "/bin/ffmpeg";
+process.env.PATH = process.env.PATH + ':' + process.env.LAMBDA_TASK_ROOT;
+const FFMPEG = "ffmpeg";
 //const FFMPEG = "/usr/local/bin/ffmpeg";
+
+const parameters = {
+	normal: {
+		ffmpeg: '-af "volume=15dB"'
+	},
+	quiet: {
+		ffmpeg: '-af "volume=10dB"'
+	}
+};
+
+const PROFILE_PATTERN = /incoming[/](\w+)[/]/;
 
 exports.handler = function(event, context, done) {
     const bucket = event.Records[0].s3.bucket.name;
     const key = decodeURIComponent(event.Records[0].s3.object.key.replace(/\+/g, ' '));
-    const inFile = uuid.v1() + "-" + bucket + "-" + key.replace(/[/]/g, '-');
-    const inPath = '/tmp/' + inFile;
-    const outPath = '/tmp/' + inFile + ".mp3";
-    const outKey = key.replace(/incoming[/]normal[/]/, '').replace(/[.]wav/, '.mp3');
-
-    console.log(`${bucket} ${key} ${inFile} ${inPath} ${outPath} ${outKey}`);
 
     if(!key.match(/[.](mp3|wav)$/)) {
     	console.log("nothing to do for " + key);
     	done();
     }
+
+    const profile = key.match(PROFILE_PATTERN)[1];
+    const inFile = uuid.v1() + "-" + bucket + "-" + key.replace(/[/]/g, '-');
+    const inPath = '/tmp/' + inFile;
+    const outPath = '/tmp/' + inFile + ".mp3";
+    const outKey = key.replace(PROFILE_PATTERN, '').replace(/[.]wav/, '.mp3');
+
+    console.log(`${profile} ${bucket} ${key} ${inFile} ${inPath} ${outPath} ${outKey}`);
+
+    const extraArgs = parameters[profile].ffmpeg || "";
 
 	var file = fs.createWriteStream(inPath);
 
@@ -36,9 +52,10 @@ exports.handler = function(event, context, done) {
     stream.pipe(file);
 
     streamToPromise(stream).then(function() {
-    	console.log("pipe ended");
+    	const command = `${FFMPEG} -i ${inPath} -ac 2 -codec:a libmp3lame -b:a 48k -ar 16000 ${extraArgs} ${outPath}`;
+    	console.log(`running exec ${command}`);
 
-    	return execAsync(`${FFMPEG} -i ${inPath} -ac 2 -codec:a libmp3lame -b:a 48k -af "volume=15dB" -ar 16000 ${outPath}`);
+    	return execAsync(command);
 
     }).then(function(stdout, stderr) {
     	console.log("finished with exec");
