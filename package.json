@@ -16,6 +16,7 @@
     "grunt-contrib-compress": "^0.14.0",
     "grunt-contrib-jshint": "^0.12.0",
     "grunt-mocha-test": "^0.12.7",
-    "mocha-junit-reporter": "*"
+    "mocha-junit-reporter": "*",
+    "should": "*"
   }
 }
