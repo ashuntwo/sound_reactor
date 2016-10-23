@@ -24,6 +24,9 @@ const parameters = {
 	},
 	zerodb: {
 		ffmpeg: '-af "volume=0dB"'
+	},
+	minus10: {
+		ffmpeg: '-af "volume=-10dB"'
 	}
 };
 
