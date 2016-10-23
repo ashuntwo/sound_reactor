@@ -45,7 +45,7 @@ exports.handler = function(event, context, done) {
     const inFile = uuid.v1() + "-" + bucket + "-" + key.replace(/[/]/g, '-');
     const inPath = '/tmp/' + inFile;
     const outPath = '/tmp/' + inFile + ".mp3";
-    const outKey = key.replace(PROFILE_PATTERN, '').replace(/[.]wav/, '.mp3');
+    const outKey = key.replace(PROFILE_PATTERN, '').replace(/[.](wav|aif)/, '.mp3');
 
     console.log(`${profile} ${bucket} ${key} ${inFile} ${inPath} ${outPath} ${outKey}`);
 
