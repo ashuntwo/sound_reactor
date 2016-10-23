@@ -18,6 +18,12 @@ const parameters = {
 	},
 	quiet: {
 		ffmpeg: '-af "volume=10dB"'
+	},
+	zero: {
+		ffmpeg: ''
+	},
+	zerodb: {
+		ffmpeg: '-af "volume=0dB"'
 	}
 };
 
@@ -27,7 +33,7 @@ exports.handler = function(event, context, done) {
     const bucket = event.Records[0].s3.bucket.name;
     const key = decodeURIComponent(event.Records[0].s3.object.key.replace(/\+/g, ' '));
 
-    if(!key.match(/[.](mp3|wav)$/) || !key.match(PROFILE_PATTERN)) {
+    if(!key.match(/[.](mp3|wav|aif)$/) || !key.match(PROFILE_PATTERN)) {
     	console.log("nothing to do for " + key);
     	done();
     }
