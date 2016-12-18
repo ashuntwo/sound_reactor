@@ -27,7 +27,11 @@ const parameters = {
 	},
 	minus10: {
 		ffmpeg: '-af "volume=-10dB"'
+	},
+	five: {
+		ffmpeg: '-af "volume=5dB"'
 	}
+
 };
 
 const PROFILE_PATTERN = /incoming[/](\w+)[/]/;
